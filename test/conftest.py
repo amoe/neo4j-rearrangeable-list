@@ -13,7 +13,7 @@ CREATE
   (i3)-[:IN_LIST {position: 2}]->(l)
 """
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def session():
     # load data here
     driver = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=('neo4j', 'password'))

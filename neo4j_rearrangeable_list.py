@@ -55,7 +55,6 @@ OPTIONAL MATCH (i2:Item)-[r2:IN_LIST]->(l)
 WHERE r2.position > oldPosition
 DELETE r, i1
 SET r2.position = r2.position - 1
-RETURN {item_id}
 """
 
 class ListManager:
