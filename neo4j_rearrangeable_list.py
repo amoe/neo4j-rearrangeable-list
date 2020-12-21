@@ -46,6 +46,18 @@ CREATE
 RETURN i
 """
 
+DELETE_QUERY = """
+MATCH
+  (l:List {id: {list_id}}),
+  (i1:Item {id: {item_id}})-[r:IN_LIST]->(l)
+WITH r.position AS oldPosition, i1 AS i1, r AS r
+OPTIONAL MATCH (i2:Item)-[r2:IN_LIST]->(l)
+WHERE r2.position > oldPosition
+DELETE r, i1
+SET r2.position = r2.position - 1
+RETURN {item_id}
+"""
+
 class ListManager:
     def __init__(self, session):
         self.session = session
@@ -70,3 +82,11 @@ class ListManager:
              'new_id': new_id}
         )
         return r.data()
+
+    def delete_item(self, list_id, item_id):
+        r = self.session.run(
+            DELETE_QUERY,
+            {'list_id': list_id, 'item_id': item_id}
+        )
+        return r.data()
+        
