@@ -1,6 +1,5 @@
 import neo4j
 
-
 QRY = """
 MATCH (l:List {id: {list_id}})<-[r:IN_LIST]-(i:Item)
 RETURN
@@ -35,6 +34,18 @@ SET r3.position = r3.position + signum, r1.position = newPosition
 RETURN i1
 """
 
+ADD_QUERY = """
+MATCH (l:List {id: {list_id}})
+OPTIONAL MATCH (l)<-[r:IN_LIST]-(:Item)
+WITH
+    COALESCE(MAX(r.position) + 1, 0) AS newLast,
+    l AS l
+CREATE
+  (i:Item {description: {new_description}, id: {new_id}}),
+  (i)-[:IN_LIST {position: newLast}]->(l)
+RETURN i
+"""
+
 class ListManager:
     def __init__(self, session):
         self.session = session
@@ -49,4 +60,13 @@ class ListManager:
 
     def retrieve_list(self, list_id):
         r = self.session.run(QRY, {'list_id': list_id})
+        return r.data()
+
+    def add_item(self, list_id, new_id, new_description):
+        r = self.session.run(
+            ADD_QUERY,
+            {'list_id': list_id,
+             'new_description': new_description,
+             'new_id': new_id}
+        )
         return r.data()
