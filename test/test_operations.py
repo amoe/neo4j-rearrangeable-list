@@ -21,6 +21,11 @@ STATE_AFTER_ADD = [
     {'description': 'Hermes', 'id': 'd', 'position': 3},
 ]
 
+STATE_AFTER_DELETE = [
+    {'description': 'Fry', 'id': 'a', 'position': 0},
+    {'description': 'Leela', 'id': 'c', 'position': 1}
+]
+
 
 def test_sanity(session):
     manager = ListManager(session)
@@ -37,3 +42,9 @@ def test_add(session):
     manager = ListManager(session)
     manager.add_item(42, 'd', "Hermes")   
     assert manager.retrieve_list(42) == STATE_AFTER_ADD
+
+
+def test_delete(session):
+    manager = ListManager(session)
+    manager.delete_item(42, 'b')
+    assert manager.retrieve_list(42) == STATE_AFTER_DELETE
