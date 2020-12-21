@@ -53,8 +53,9 @@ MATCH
 WITH r.position AS oldPosition, i1 AS i1, r AS r
 OPTIONAL MATCH (i2:Item)-[r2:IN_LIST]->(l)
 WHERE r2.position > oldPosition
+WITH COLLECT(r2) AS laterRels, r, i1
 DELETE r, i1
-SET r2.position = r2.position - 1
+FOREACH (r3 IN laterRels |  SET r3.position = r3.position - 1)
 """
 
 class ListManager:
